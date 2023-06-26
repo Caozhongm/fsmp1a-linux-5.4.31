@@ -1,0 +1,267 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+/*
+ * Copyright (C) Farsight 2018 - All Rights Reserved
+ */
+
+/dts-v1/;
+
+#include "stm32mp157a-fsmp1a-mipi050.dts"
+
+/ {
+    model = "HQYJ STM32MP157 FSMP1A EXTENDED MIPI050 Discovery Board";
+    compatible = "st,stm32mp157a-fsmp1a-extended-mipi050", "st,stm32mp157";
+
+	aliases {
+		serial1 = &uart5;
+	};
+
+	led {
+		compatible = "gpio-leds";
+		led1 {
+			label = "led1";
+			gpios = <&gpioe 10 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+		led2 {
+			label = "led2";
+			gpios = <&gpiof 10 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+		led3 {
+			label = "led3";
+			gpios = <&gpioe 8 GPIO_ACTIVE_HIGH>;
+			default-state = "off";
+		};
+	};
+
+	beeper {
+		compatible = "pwm-beeper";
+		pwms = <&pwm4 0 4000000>;
+	};
+
+	fan {
+		compatible = "pwm-fan";
+		#cooling-cells = <2>;
+		pwms = <&pwm1 0 1000>;
+		cooling-levels = <0 102 170 230>;
+	};
+
+	vibrator {
+		compatible = "pwm-vibrator";
+		pwms = <&pwm16 0 4000000>;
+		pwm-names = "enable";
+		direction-duty-cycle-ns = <10000000>;
+	};
+};
+
+&adc {
+	vdd-supply = <&vdd>;
+	vdda-supply = <&vdd>;
+	vref-supply = <&vdd>;
+	status = "okay";
+
+	adc1: adc@0 {
+		st,adc-channels = <0 1>;
+		st,min-sample-time-nsecs = <10000>;
+		status = "okay";
+	};
+};
+
+
+&timers4 {
+	/* spare dmas for other usage */
+	/delete-property/dmas;
+	/delete-property/dma-names;
+	status = "okay";
+	pwm4: pwm {
+		pinctrl-0 = <&pwm4_pins_c>;
+		pinctrl-1 = <&pwm4_sleep_pins_c>;
+		pinctrl-names = "default", "sleep";
+		#pwm-cells = <2>;
+		status = "okay";
+	};
+	timer@3 {
+		status = "disabled";
+	};
+};
+
+&timers1 {
+	/* spare dmas for other usage */
+	/delete-property/dmas;
+	/delete-property/dma-names;
+	status = "okay";
+	pwm1: pwm {
+		pinctrl-0 = <&pwm1_pins_b>;
+		pinctrl-1 = <&pwm1_sleep_pins_b>;
+		pinctrl-names = "default", "sleep";
+		#pwm-cells = <2>;
+		status = "okay";
+	};
+	timer@0 {
+		status = "disabled";
+	};
+};
+
+&timers16 {
+	/* spare dmas for other usage */
+	/delete-property/dmas;
+	/delete-property/dma-names;
+	status = "okay";
+	pwm16: pwm {
+		pinctrl-0 = <&pwm16_pins_a>;
+		pinctrl-1 = <&pwm16_sleep_pins_a>;
+		pinctrl-names = "default", "sleep";
+		#pwm-cells = <2>;
+		status = "okay";
+	};
+	timer@16 {
+		status = "disabled";
+	};
+};
+
+&i2c1 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&i2c1_pins_b>;
+	pinctrl-1 = <&i2c1_pins_sleep_b>;
+	i2c-scl-rising-time-ns = <100>;
+	i2c-scl-falling-time-ns = <7>;
+	status = "okay";
+	/delete-property/dmas;
+	/delete-property/dma-names;
+
+	si7020: si7020@40 {
+		compatible = "silabs,si7020";
+		reg = <0x40>;
+	};
+
+	ap3216c: ap3216c@1e {
+		compatible = "liteon,ap3216c";
+		reg = <0x1e>;
+		interrupts = <13 IRQ_TYPE_EDGE_FALLING>;
+		interrupt-parent = <&gpiof>;
+	};
+
+	max30102: max30102@57 {
+		compatible = "maxim,max30102";
+		reg = <0x57>;
+		maxim,red-led-current-microamp = <7000>;
+		maxim,ir-led-current-microamp = <7000>;
+		interrupt-parent = <&gpiob>;
+		interrupts = <12 IRQ_TYPE_EDGE_FALLING >;
+	};
+};
+
+&m_can1 {
+	pinctrl-names = "default","sleep";
+	pinctrl-0 = <&m_can1_pins_a>;
+	pinctrl-1 = <&m_can1_sleep_pins_a>;
+	status = "okay";
+
+	can-transmitter {
+		max-bitrate = <5000000>;
+	};
+};
+
+&uart5 {
+	pinctrl-names = "default", "sleep", "idle", "no_console_suspend";
+	pinctrl-0 = <&uart5_pins_a>;
+	pinctrl-1 = <&uart5_sleep_pins_a>;
+	pinctrl-2 = <&uart5_idle_pins_a>;
+	/delete-property/dmas;
+	/delete-property/dma-names;
+	status = "okay";
+};
+
+
+&pinctrl {
+	pwm4_pins_c: pwm4-0 {
+		pins {
+	 		pinmux = <STM32_PINMUX('B', 6, AF2)>; /* TIM4_CH1 */
+			bias-pull-down;
+			drive-push-pull;
+			slew-rate = <0>;
+			};
+	};
+
+	pwm4_sleep_pins_c: pwm4-sleep-0 {
+		pins {
+			pinmux = <STM32_PINMUX('B', 6, ANALOG)>; /* TIM4_CH1 */
+		};
+	};
+
+	pwm1_pins_b: pwm1-0 {
+		pins {
+			pinmux = <STM32_PINMUX('E', 9, AF1)>; /* TIM1_CH1 */
+			bias-pull-down;
+			drive-push-pull;
+			slew-rate = <0>;
+		};
+	};
+
+	pwm1_sleep_pins_b: pwm1-sleep-0 {
+		pins {
+			pinmux = <STM32_PINMUX('E', 9, ANALOG)>; /* TIM1_CH1 */
+		};
+	};
+
+	pwm16_pins_a: pwm16-0 {
+		pins {
+			pinmux = <STM32_PINMUX('F', 6, AF1)>; /* TIM16_CH1 */
+			bias-pull-down;
+			drive-push-pull;
+			slew-rate = <0>;
+		};
+	};
+
+	pwm16_sleep_pins_a: pwm16-sleep-0 {
+		pins {
+			pinmux = <STM32_PINMUX('F', 6, ANALOG)>; /* TIM16_CH1 */
+		};
+	};
+
+	uart5_pins_a: uart5-0 {
+		pins1 {
+			pinmux = <STM32_PINMUX('B', 13, AF14)>; /* UART5_TX */
+			bias-disable;
+			drive-push-pull;
+			slew-rate = <0>;
+		};
+		pins2 {
+			pinmux = <STM32_PINMUX('B', 5, AF12)>; /* UART5_RX */
+			bias-disable;
+		};
+	};
+
+	uart5_idle_pins_a: uart5-idle-0 {
+		pins1 {
+			pinmux = <STM32_PINMUX('B', 13, ANALOG)>; /* UART5_TX */
+		};
+		pins2 {
+			pinmux = <STM32_PINMUX('B', 5, AF7)>; /* UART5_RX */
+			bias-disable;
+		};
+	};
+
+	uart5_sleep_pins_a: uart5-sleep-0 {
+		pins {
+			pinmux = <STM32_PINMUX('B', 13, ANALOG)>, /* UART5_TX */
+					 <STM32_PINMUX('B', 5, ANALOG)>; /* UART5_RX */
+		};
+	};
+
+};
+&spi4 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&spi4_pins_a>;
+	pinctrl-1 = <&spi4_sleep_pins_a>;
+	cs-gpios = <&gpioe 11 0>;
+	status = "okay";
+
+	m74hc595: m74hc595@0 {
+		compatible = "ge,achc";
+		reg = <0>;
+		spi-max-frequency = <100000>;
+	};
+};
+
+
