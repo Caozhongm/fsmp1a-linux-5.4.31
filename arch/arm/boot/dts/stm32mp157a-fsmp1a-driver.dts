@@ -1,0 +1,72 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+/*
+ * Copyright (C) Farsight 2018 - All Rights Reserved
+ */
+
+/dts-v1/;
+
+#include "stm32mp157a-fsmp1a.dts"
+
+/ {
+    model = "HQYJ STM32MP157 FSMP1A EXTENDED Discovery Board";
+    compatible = "st,stm32mp157a-fsmp1a-extended", "st,stm32mp157";
+
+	fs_test {
+		compatible = "fs,test";
+		test-u32 = <12>;
+		test-u32-array = <123 124 125>;
+		test-string = "hello";
+		test-string-array = "hello", "world";
+	};
+
+	fs_key {
+		compatible = "fs,key";
+		interrupt-parent = <&gpiof>;
+		interrupts = <9 IRQ_TYPE_EDGE_FALLING>;
+	};
+
+	fs_led {
+		compatible = "fs,led";
+		reg = <0x54004000 0xff>;
+	};
+};
+
+
+&i2c1 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&i2c1_pins_b>;
+	pinctrl-1 = <&i2c1_pins_sleep_b>;
+	i2c-scl-rising-time-ns = <100>;
+	i2c-scl-falling-time-ns = <7>;
+	status = "okay";
+	/delete-property/dmas;
+	/delete-property/dma-names;
+
+	sht20: sht20@40 {
+		compatible = "sensirion,sht20";
+		reg = <0x40>;
+	};
+};
+
+&spi4 {
+	pinctrl-names = "default", "sleep";
+	pinctrl-0 = <&spi4_pins_a>;
+	pinctrl-1 = <&spi4_sleep_pins_a>;
+	cs-gpios = <&gpioe 11 0>;
+	status = "okay";
+
+#if 0
+	spidev: spidev@0 {
+		compatible = "ge,achc";
+		reg = <0>;
+		spi-max-frequency = <100000>;
+	};
+#endif
+
+	m74hc595: m74hc595@0 {
+		compatible = "st,m74hc595";
+		reg = <0>;
+		spi-max-frequency = <100000>;
+	};
+};
+

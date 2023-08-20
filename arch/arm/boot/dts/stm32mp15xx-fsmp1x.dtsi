@@ -128,12 +128,13 @@
 		status = "okay";
 	};
 
+#if 0
 	leds {
 		compatible = "gpio-leds";
 		cpu {
 			label = "cpu";
 			gpios = <&gpioz 5 GPIO_ACTIVE_LOW>;
-			linux,default-trigger = "heartbeat";
+			linux.default-trigger= "heartbeat";
 			default-state = "on";
 		};
 
@@ -149,7 +150,9 @@
 			default-state = "off";
 		};
 	};
+#endif
 
+#if 0
 	keys {
 		compatible = "gpio-keys";
 	
@@ -160,6 +163,7 @@
 			linux,code = <KEY_ENTER>;
 		};
 	};
+#endif
 
 	sound {
 		compatible = "audio-graph-card";

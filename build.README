@@ -1,0 +1,7 @@
+配置内核：
+make ARCH=arm stm32_fsmp1a_defconfig O=../output/
+
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- LOADADDR=C2000040 uImage O=../output/
+
+make ARCH=arm CROSS_COMPILE=arm-linux-gnueabi- LOADADDR=C2000040 dtbs O=../output/

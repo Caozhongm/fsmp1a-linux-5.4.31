@@ -993,6 +993,7 @@ dtb-$(CONFIG_ARCH_STM32) += \
 	stm32mp157a-fsmp1a-mipi050.dtb \
 	stm32mp157a-fsmp1a-rgb070.dtb \
 	stm32mp157a-fsmp1a-extended.dtb \
+	stm32mp157a-fsmp1a-driver.dtb \
 	stm32mp157a-fsmp1a-extended-rgb070.dtb \
 	stm32mp157a-fsmp1a-extended-mipi050.dtb \
 	stm32mp157d-dk1.dtb \
